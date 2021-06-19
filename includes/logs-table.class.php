@@ -23,6 +23,15 @@ class NashaatLogTable extends NashaatLogsTableBase {
 	 */
 	protected function prepare() {
 
+		$this->date_filter_options = array(
+			'today' => get_nashaat_lang( 'today' ),
+			'yesterday' => get_nashaat_lang( 'yesterday' ),
+			'last_7_days' => get_nashaat_lang( 'last_7_days' ),
+			'last_14_days' => get_nashaat_lang( 'last_14_days' ),
+			'last_30_days' => get_nashaat_lang( 'last_30_days' ),
+			'last_90_days' => get_nashaat_lang( 'last_90_days' )
+		);
+
 		$filter_query = $this->get_filter_query();
 		$this->where = $filter_query['where'];
 		$this->current_filters = $filter_query['filters'];
