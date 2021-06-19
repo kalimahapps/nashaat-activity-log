@@ -353,6 +353,19 @@ class NashaatLogsTableBase {
 		$current_url = remove_query_arg( $removable_query_args );
 
 		$total_pages = $this->total_pages;
+		if ( $total_pages < 1 ) {
+			$output = "<div class='tablenav-pages'>";
+			$output .= '<span class="displaying-num">';
+			$output .= sprintf(
+				/* translators: %s: Number of items. */
+				_n( '%s item', '%s items', $this->total_count ),
+				number_format_i18n( $this->total_count )
+			);
+			$output .= '</span> ';
+			$output .= '</div>';
+
+			return $output;
+		}
 
 		$pagination = '';
 		$link_types = array( 'first-page', 'prev-page', 'current-page', 'next-page', 'last-page' );
@@ -379,14 +392,14 @@ class NashaatLogsTableBase {
 
 				case 'next-page':
 					$text = '&rsaquo;';
-					if ( $current_page < $total_pages - 1 ) {
+					if ( $current_page < $total_pages ) {
 						$tag = 'a';
 						$link = add_query_arg( 'paged', min( $total_pages, $current_page + 1 ), $current_url );
 					}
 					break;
 				case 'last-page':
 					$text = '&raquo;';
-					if ( $current_page < $total_pages ) {
+					if ( $current_page < $total_pages - 1 ) {
 						$tag = 'a';
 						$link = add_query_arg( 'paged', $total_pages, $current_url );
 					}
