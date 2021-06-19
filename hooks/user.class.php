@@ -14,7 +14,11 @@ class NashaatUserHooks extends NashaatHookBase {
 			'args' => 2
 		),
 		array(
-			'name' => array( 'wp_logout', 'user_register', 'profile_update', 'delete_user' ),
+			'name' => 'profile_update',
+			'args' => 2
+		),
+		array(
+			'name' => array( 'wp_logout', 'user_register', 'delete_user' ),
 			'callback' => 'user_actions_callback'
 		)
 	);
@@ -35,9 +39,6 @@ class NashaatUserHooks extends NashaatHookBase {
 		$event = false;
 		$level = NASHAAT_LOG_LEVEL_LOW;
 		switch ( current_action() ) {
-			case 'profile_update':
-				$event = 'updated';
-				break;
 			case 'user_register':
 				$event = 'registered';
 				break;
@@ -62,6 +63,35 @@ class NashaatUserHooks extends NashaatHookBase {
 
 		$this->level = $level;
 		$this->event = $event;
+	}
+
+	/**
+	 * Get porfile changes
+	 *
+	 * @param integer $user_id User ID
+	 * @param WP_User $old_user_data Old user data
+	 * @return void
+	 */
+	protected function profile_update_callback( int $user_id, WP_User $old_user_data ) {
+		$updated_user_data = get_userdata( $user_id );
+		$changes = array();
+
+		$monitor_data = array( 'user_login', 'user_pass', 'user_nicename', 'user_email', 'user_url', 'display_name', 'caps' );
+		foreach ( $monitor_data as $monitor_key ) {
+			if ( $updated_user_data->{$monitor_key} != $old_user_data->{$monitor_key} ) {
+				$changes[] = $monitor_key;
+			}
+		}
+
+		if ( count( $changes ) === 0 ) {
+			return;
+		}
+
+		$this->log_info = $this->pluck_object( $updated_user_data->data, array( 'ID', 'user_login', 'display_name' ) );
+		$this->log_info['roles'] = $updated_user_data->roles;
+		$this->log_info['changes'] = $changes;
+		$this->level = NASHAAT_LOG_LEVEL_MEDIUM;
+		$this->event = 'updated';
 	}
 
 	/**
@@ -127,7 +157,31 @@ class NashaatUserHooks extends NashaatHookBase {
 			'display_name' => $log_info['display_name'],
 			'role' => implode( ', ', $log_info['roles'] )
 		);
-		return $render_class::array_to_html( $user_data );
+
+		$output = $render_class::array_to_html( $user_data );
+		if ( ! isset( $log_info['changes'] ) ) {
+			return $output;
+		}
+
+		// Get language string for each change key
+		$changes_lang = array_map(
+			function( $key ) {
+				return get_nashaat_lang( $key );
+			},
+			$log_info['changes']
+		);
+
+		// ouput changes
+		$output .= "<div class='user-changes-wrapper'>";
+		$output .= "<h5 class='user-changes-title'>" . get_nashaat_lang( 'changes' ) . '</h5>';
+		$output .= "<div class='user-changes'>";
+
+		$output .= implode( ', ', $changes_lang );
+		$output .= '</div>';
+		$output .= '</div>';
+
+		return $output;
+
 	}
 
 }

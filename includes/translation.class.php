@@ -159,10 +159,16 @@ class NashaatTranslation {
 			'filters_applied' => __( 'Filters Applied:', 'nashaat' ),
 			'search_logs' => __( 'Search logs', 'nashaat' ),
 			'guest' => __( 'Guest', 'nashaat' ),
-			'no_items_found' => __( 'No items found', 'nashaat' )
+			'no_items_found' => __( 'No items found', 'nashaat' ),
+			'user_login' => __( 'login name', 'nashaat' ),
+			'user_pass' => __( 'password', 'nashaat' ),
+			'user_nicename' => __( 'nice name', 'nashaat' ),
+			'user_email' => __( 'email', 'nashaat' ),
+			'user_url' => __( 'url', 'nashaat' ),
+			'display_name' => __( 'display name', 'nashaat' ),
+			'caps' => __( 'capabilities', 'nashaat' )
 		);
 	}
-
 
 	/**
 	 * Get translation string based on key provided
