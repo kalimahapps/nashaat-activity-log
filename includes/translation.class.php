@@ -30,7 +30,7 @@ class NashaatTranslation {
 	 * @return array Array of translations and related keys
 	 */
 	private function set_translation_strings() {
-		return array(
+		$translation_strings = array(
 			'nashaat' => __( 'Nashaat', 'nashaat' ),
 			'nashaat_settings' => __( 'Nashaat Settings', 'nashaat' ),
 			'nashaat_logs' => __( 'Nashaat Log', 'nashaat' ),
@@ -106,7 +106,7 @@ class NashaatTranslation {
 			'changes' => __( 'Changes', 'nashaat' ),
 			'edits' => __( 'Edits', 'nashaat' ),
 			'categories' => __( 'Categories', 'nashaat' ),
-			'tags' => __( 'tags', 'nashaat' ),
+			'tags' => __( 'Tags', 'nashaat' ),
 			'parent' => __( 'Parent', 'nashaat' ),
 			'menu_order' => __( 'Menu order', 'nashaat' ),
 			'prev_count' => __( 'Previous count', 'nashaat' ),
@@ -166,8 +166,11 @@ class NashaatTranslation {
 			'user_email' => __( 'email', 'nashaat' ),
 			'user_url' => __( 'url', 'nashaat' ),
 			'display_name' => __( 'display name', 'nashaat' ),
-			'caps' => __( 'capabilities', 'nashaat' )
+			'caps' => __( 'capabilities', 'nashaat' ),
+			'no_title' => __( 'No Title', 'nashaat' ),
 		);
+
+		return apply_filters( 'nashaat_translations', $translation_strings );
 	}
 
 	/**

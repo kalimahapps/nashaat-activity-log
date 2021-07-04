@@ -56,6 +56,19 @@ class NashaatCommentHooks extends NashaatHookBase {
 			return;
 		}
 
+		// in edit_comment action $comment is not an object but an array
+		// post_type will not be available
+		if ( is_array( $comment ) ) {
+			$post_type = get_post_type( $comment['comment_post_ID'] );
+		} else {
+			$post_type = $comment->post_type;
+		}
+
+		// Log only for pages and posts
+		if ( ! in_array( $post_type, array( 'post', 'page' ) ) ) {
+			return;
+		}
+
 		$this->log_info = $this->pluck_object(
 			$comment,
 			array(
@@ -65,14 +78,6 @@ class NashaatCommentHooks extends NashaatHookBase {
 				'user_id',
 			)
 		);
-
-		// in edit_comment action $comment is not an object but an array
-		// post_type will not be available
-		if ( is_array( $comment ) ) {
-			$post_type = get_post_type( $comment['comment_post_ID'] );
-		} else {
-			$post_type = $comment->post_type;
-		}
 
 		$this->log_info['id'] = $comment_id;
 		$this->log_info['post_type'] = $post_type;

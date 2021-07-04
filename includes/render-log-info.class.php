@@ -104,6 +104,68 @@ class NashaatRenderLogInfo {
 	}
 
 	/**
+	 * Get links and title of posts
+	 *
+	 * @param array $posts_list Array of posts
+	 * @return string Array with links and titles or not_available string
+	 */
+	public static function get_posts_links( array $posts_list ) :string {
+
+		// if not product available then display a message
+		if ( count( $posts_list ) === 0 ) {
+			return get_nashaat_lang( 'not_available' );
+		}
+
+		// Loop through products and get links if available, or just the title
+		$posts_links = array();
+
+		foreach ( $posts_list as $post ) {
+			$post_link = get_edit_post_link( $post['id'] );
+			if ( ! empty( $post_link ) ) {
+				$posts_links[] = sprintf( "<a target='_blank' href='%s'>%s</a>", $post_link, $post['title'] );
+			} else {
+				$posts_links[] = $post['title'];
+			}
+		}
+
+		return implode( ', ', $posts_links );
+	}
+
+
+	/**
+	 * Get terms links
+	 *
+	 * @param string $taxonomy Taxonomy that terms are related to
+	 * @param array  $change_array Array of prev and new terms ids
+	 * @return array Modified $change_array with titles and links
+	 */
+	public static function get_terms_links( string $taxonomy, array $change_array ) :array {
+		$results = array_map(
+			function( $terms ) use ( $taxonomy ) {
+				// Loop through terms and build an array of terms names with links if possible, otherwise just names
+				$terms_links = array();
+				foreach ( $terms as $cat_data ) {
+					$cat_link = get_edit_term_link( $cat_data['term_id'], $taxonomy );
+					if ( empty( $cat_link ) ) {
+						$terms_links[] = $cat_data['name'];
+					} else {
+						$terms_links[] = sprintf( "<a target='_blank' href='%s'>%s</a>", $cat_link, $cat_data['name'] );
+					}
+				}
+
+				if ( count( $terms_links ) === 0 ) {
+					$terms_links[] = get_nashaat_lang( 'not_available' );
+				}
+
+				return implode( ', ', $terms_links );
+			},
+			$change_array
+		);
+
+		return $results;
+	}
+
+	/**
 	 * Render edit changes into html (title, description, slug .. etc)
 	 * Show previous and new values
 	 *
@@ -175,51 +237,17 @@ class NashaatRenderLogInfo {
 
 				case 'tags':
 				case 'categories':
-					$taxonomy = ( $change_key === 'categories' ) ? 'category' : 'post_tag';
-					list($prev_terms, $new_terms) = $change_array;
+					$taxonomy = ( $change_key === 'tags' ) ? 'post_tag' : 'category';
+					$terms_links = self::get_terms_links( $taxonomy, $change_array );
 
-					// Loop through prev categories or tags and build an array
-					// of categories names with links if possible, otherwise just names
-					$prev_terms_links = array();
-					foreach ( $prev_terms as $cat_data ) {
-						$cat_link = get_edit_term_link( $cat_data['term_id'], $taxonomy );
-						if ( empty( $cat_link ) ) {
-							$prev_terms_links[] = $cat_data['name'];
-						} else {
-							$prev_terms_links[] = sprintf( "<a target='_blank' href='%s'>%s</a>", $cat_link, $cat_data['name'] );
-						}
-					}
-
-					// Loop through new categories or tags and build an array
-					// of categories names with links if possible, otherwise just names
-
-					$new_terms_links = array();
-					foreach ( $new_terms as $cat_data ) {
-						$cat_link = get_edit_term_link( $cat_data['term_id'], $taxonomy );
-						if ( empty( $cat_link ) ) {
-							$new_terms_links[] = $cat_data['name'];
-						} else {
-							$new_terms_links[] = sprintf( "<a target='_blank' href='%s'>%s</a>", $cat_link, $cat_data['name'] );
-						}
-					}
-
-					// Make sure a value is displayed when array is empty
-					if ( count( $prev_terms_links ) === 0 ) {
-						$prev_terms_links[] = get_nashaat_lang( 'not_available' );
-					}
-
-					if ( count( $new_terms_links ) === 0 ) {
-						$new_terms_links[] = get_nashaat_lang( 'not_available' );
-					}
-
-					$term_data = array(
-						'prev' => implode( ', ', $prev_terms_links ),
-						'new' => implode( ', ', $new_terms_links )
+					$terms_data = array(
+						'prev' => $terms_links[0],
+						'new' => $terms_links[1]
 					);
 
-					$output .= self::array_to_html( $term_data );
-
+					$output .= self::array_to_html( $terms_data );
 					break;
+
 				case 'parent':
 					list($prev_parent, $new_parent) = $change_array;
 

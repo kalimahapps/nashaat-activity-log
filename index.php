@@ -2,7 +2,7 @@
 /*
 Plugin Name: Nashaat Activity Log
 Description: Log and view different WordPress activity on your site
-Version: 1.0.1
+Version: 1.1
 Author: Kalimah Apps
 Author URI: https://github.com/kalimah-apps
 License: GPLv2 or later
@@ -40,6 +40,13 @@ function nashaat_initiate_log() {
 		new NashaatMenuHooks();
 		new NashaatMediaHooks();
 		new NashaatCommentHooks();
+
+		// WooCommerce
+		new NashaatWCSettings();
+		new NashaatWCOrders();
+		new NashaatWCProduct();
+		new NashaatWCCoupon();
+		new NashaatWCVariations();
 	} catch ( \Throwable $th ) {
 		echo esc_html( $th->getMessage() );
 	}
@@ -63,8 +70,14 @@ foreach ( $includes as $filename ) {
 	require_once NASHAAT_PLUGIN_PATH . "includes/{$filename}.php";
 }
 
-foreach ( glob( NASHAAT_PLUGIN_PATH . '/hooks/*.php' ) as $filename ) {
-	require_once $filename;
+$dir_iterator = new RecursiveDirectoryIterator( NASHAAT_PLUGIN_PATH . '/hooks/' );
+$iterator = new RecursiveIteratorIterator( $dir_iterator, RecursiveIteratorIterator::SELF_FIRST );
+
+foreach ( $iterator as $file ) {
+	if ( ! $file->isFile() ) {
+		continue;
+	}
+	require_once $file->getPathname();
 }
 
 try {
