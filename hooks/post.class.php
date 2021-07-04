@@ -250,8 +250,8 @@ class NashaatPostHooks extends NashaatHookBase {
 	 * @return bool|void False if revision or menu item
 	 */
 	protected function delete_post_callback( int $postid, WP_Post $post ) {
-		// Skip for revision, menu items and attachment
-		if ( wp_is_post_revision( $postid ) || in_array( get_post_type( $postid ), array( 'nav_menu_item', 'attachment' ) ) ) {
+
+		if ( wp_is_post_revision( $postid ) || ! in_array( get_post_type( $postid ), array( 'page', 'post' ) ) ) {
 			return false;
 		}
 
@@ -270,7 +270,6 @@ class NashaatPostHooks extends NashaatHookBase {
 
 	/**
 	 * Handle post actions. This will only handle status change.
-	 * Post data update will be handled  by update_post_callback
 	 *
 	 * @param string  $new_status New post status
 	 * @param string  $old_status Old post status
@@ -279,8 +278,8 @@ class NashaatPostHooks extends NashaatHookBase {
 	 * @return bool|void False if action is not processed
 	 */
 	protected function transition_post_status_callback( string $new_status, string $old_status, WP_Post $post ) {
-		// Skip for revision, autosave and  menu items
-		if ( wp_is_post_revision( $post->ID ) || wp_is_post_autosave( $post->ID ) || get_post_type( $post->ID ) === 'nav_menu_item' ) {
+		// Skip for revision, autosave, and any post that is not of post or page type
+		if ( wp_is_post_revision( $post->ID ) || wp_is_post_autosave( $post->ID ) || ! in_array( get_post_type( $post->ID ), array( 'page', 'post' ) ) ) {
 			return false;
 		}
 
@@ -342,6 +341,9 @@ class NashaatPostHooks extends NashaatHookBase {
 	public function render_log_info_output( array $log_info, string $event, array $item, $render_class ) : string {
 		$id = isset( $log_info['id'] ) ? $log_info['id'] : $log_info['ID'];
 
+		if ( is_null( $id ) ) {
+			$id = 0;
+		}
 		$post_data['id'] = $render_class::maybe_get_post_edit_link( $id );
 		$post_data['title'] = $render_class::maybe_get_post_title( $log_info );
 
