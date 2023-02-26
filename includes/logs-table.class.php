@@ -22,6 +22,7 @@ class NashaatLogTable extends NashaatLogsTableBase {
 	 * @return void
 	 */
 	protected function prepare() {
+		add_action( 'wp_ajax_delete_single_record', array( $this, 'delete_single_record' ) );
 
 		$this->date_filter_options = array(
 			'today' => get_nashaat_lang( 'today' ),
@@ -35,6 +36,39 @@ class NashaatLogTable extends NashaatLogsTableBase {
 		$filter_query = $this->get_filter_query();
 		$this->where = $filter_query['where'];
 		$this->current_filters = $filter_query['filters'];
+	}
+
+	/**
+	 * Ajax function to delete all log data
+	 *
+	 * @return void
+	 */
+	public function delete_single_record() {
+		$__post = filter_input_array( INPUT_POST );
+
+		 // Check admin screen and current user privileges
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) || ! isset( $__post['nonce'] ) ) {
+			wp_send_json( get_nashaat_lang( 'unable_to_delete' ), 400 );
+		}
+
+		$nonce = $__post['nonce'];
+		if ( ! wp_verify_nonce( $nonce, 'nashaat_nonce' ) ) {
+			wp_send_json( get_nashaat_lang( 'unable_to_delete' ), 400 );
+		}
+
+		global $wpdb;
+
+		$id = isset( $__post['id'] ) ? sanitize_text_field( $__post['id'] ) : '';
+		if ( empty( $id ) ) {
+			wp_send_json( get_nashaat_lang( 'invalid_id' ), 200 );
+		}
+
+		$is_deleted = $wpdb->delete( $this->table, array( 'id' => $id ) );
+		if ( $is_deleted ) {
+			wp_send_json_success();
+		}
+
+		wp_send_json( get_nashaat_lang( 'unable_to_delete' ), 200 );
 	}
 
 	/**
@@ -90,6 +124,7 @@ class NashaatLogTable extends NashaatLogsTableBase {
 			'context' => get_nashaat_lang( 'context' ),
 			'event' => get_nashaat_lang( 'event' ),
 			'log_info' => get_nashaat_lang( 'data' ),
+			'actions' => get_nashaat_lang( 'actions' ),
 		);
 		return $columns;
 	}
@@ -119,7 +154,7 @@ class NashaatLogTable extends NashaatLogsTableBase {
 	}
 
 	/**
-	 * Helper function to build WHERE query based on $_GET paramters
+	 * Helper function to build WHERE query based on $_GET parameters
 	 * and return an array of filters applied to display to user
 	 *
 	 * @return string Formed where query
@@ -149,7 +184,7 @@ class NashaatLogTable extends NashaatLogsTableBase {
 			);
 		}
 
-		// Loop thorugh each filterable column to see if filter has been applied
+		// Loop thorough each filterable column to see if filter has been applied
 		foreach ( $this->filterable as $filter_key ) :
 
 			// user_data is special case, covert to user
@@ -301,10 +336,10 @@ class NashaatLogTable extends NashaatLogsTableBase {
 
 
 	/**
-	 * Helper funtion to get level translation
+	 * Helper function to get level translation
 	 *
 	 * @param integer $level Level number
-	 * @return string Corrosponding translation
+	 * @return string Corresponding translation
 	 */
 	private function get_level_text( int $level ) {
 		$level_text = false;
@@ -362,11 +397,30 @@ class NashaatLogTable extends NashaatLogsTableBase {
 		$level_data .= '</div>';
 
 		return $level_data;
-
 	}
 
 	/**
-	 * Handle log_info column display for differnt context and events
+	 * Render actions column
+	 *
+	 * Actions include, deleting and bookmarking
+	 *
+	 * @param array $log_info Log information
+	 * @param array $item Current item data
+	 * @return string Html string with
+	 */
+	protected function column_actions( $log_info, array $item ) {
+		$spinner = "<i class='action-spinner fas fa-sync fa-spin'></i>";
+		$actions_html = '<div class="actions-wrapper">';
+		$actions_html .= '<div class="single-action-wrapper">';
+		$actions_html .= "<span href='#' class='delete-single-record' data-id='{$item['id']}' title='" . get_nashaat_lang( 'delete' ) . "'><i class='fas fa-trash'></i></span>";
+		$actions_html .= "$spinner </div>";
+		$actions_html .= '</div>';
+
+		return $actions_html;
+	}
+
+	/**
+	 * Handle log_info column display for different context and events
 	 *
 	 * @param array $log_info Column log_info data
 	 * @param array $item Item data
@@ -383,9 +437,7 @@ class NashaatLogTable extends NashaatLogsTableBase {
 		}
 
 		return "<div class='log-info-wrapper'>{$html}</div>";
-
 	}
-
 
 	/**
 	 * Handle user column display
