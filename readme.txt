@@ -1,9 +1,9 @@
 === Nashaat Activity Log ===
 Contributors: khr2003
-Tags: acitivy,log,monitor,WooCommerce,event
+Tags: activity,log,monitor,WooCommerce,event
 Requires at least: 5.3
-Tested up to: 5.7.2
-Stable tag: 1.1
+Tested up to: 6.1
+Stable tag: 1.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -31,8 +31,30 @@ It logs plugins and themes activation, deactivate, installation and removal. For
 
 === Third party plugins ===
 Built in support for these third-party plugins events:
-- **WooCommerce**<br>
- Log product, order, copoun, settings and product variations
+**[WooCommerce](https://woocommerce.com/)**
+ - Products
+- Orders
+- Copouns,
+- Settings
+- Product variations
+
+**[Gravity Forms](https://www.gravityforms.com/)**
+- Forms changes (status, settings .. etc)
+- Core settings
+- Import and export
+- Notification and confirmations updates
+
+**[User switching](https://wordpress.org/plugins/user-switching/)**
+- Switch off
+- Switch to/back
+
+**[WP Crontrol](https://wordpress.org/plugins/wp-crontrol/)**
+- Events
+- Schedules
+
+**[Yoast Duplicate Post](https://wordpress.org/plugins/duplicate-post/)**
+- Post clone
+- Settings change
 
 
 == Features ==
@@ -44,7 +66,17 @@ Built in support for these third-party plugins events:
 == Planned Features ==
 I am planning to add the following features. There is no time or version set yet. Since the plugin is in early releases I am focusing on fixing bugs, updating code and optimizing performance.
 - Multisite support.
-- Popular plugins support: Yoast SEO, Gravity Forms, Advanced Custom Fields (ACF), WPForms, bbPress, Contact Form 7, Easy Digital Downloads and any other popular plugins that might be requested.
+- Popular plugins support:
+
+* Yoast SEO
+* Gravity Forms (completed)
+* Advanced Custom Fields (ACF)
+* WPForms
+* bbPress
+* Contact Form 7
+* Easy Digital Downloads
+
+and any other popular plugins that might be requested.
 - User session management. To see current singed in user and terminate the session if needed.
 - Toggling logging action option. Disable/Enable certain actions to be logged.
 - Expand logging to other areas of WordPress
@@ -59,6 +91,14 @@ I am planning to add the following features. There is no time or version set yet
 4. Settings page
 
 == Changelog ==
+=1.2=
+- Added gravityforms support
+- Added user switching support
+- Added WP Crontrol support
+- Added Yoast Duplicate post support
+- Add delete row action
+- Better exception handling
+
 =1.1=
 - Added WooCommerce support (settings, products, orders, variations and copouns events)
 - Fixed few minor bugs

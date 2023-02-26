@@ -1,7 +1,6 @@
 {
 	"php.validate.enable": false,
 	"php.suggest.basic": false,
-
 	"editor.cursorStyle": "line",
 	"editor.cursorBlinking": "smooth",
 	"intelephense.telemetry.enabled": false,
@@ -110,5 +109,21 @@
 		"zip",
 		"zlib",
 		"wordpress"
+	],
+	"cSpell.words": [
+		"absint",
+		"ABSPATH",
+		"Akismet",
+		"crontrol",
+		"gforms",
+		"gravityforms",
+		"Kalimah",
+		"kses",
+		"longtext",
+		"Nashaat",
+		"navspan",
+		"tablenav",
+		"widefat",
+		"wpdb"
 	]
 }
