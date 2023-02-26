@@ -74,6 +74,7 @@ class NashaatTranslation {
 			'approved' => __( 'Approved', 'nashaat' ),
 			'unapproved' => __( 'Unapproved', 'nashaat' ),
 			'exported' => __( 'Exported', 'nashaat' ),
+			'imported' => __( 'Exported', 'nashaat' ),
 			'reorder' => __( 'Reorder', 'nashaat' ),
 			'failed_login_attempt' => __( 'Failed Login', 'nashaat' ),
 			'login' => __( 'Login', 'nashaat' ),
@@ -163,23 +164,46 @@ class NashaatTranslation {
 			'user_login' => __( 'login name', 'nashaat' ),
 			'user_pass' => __( 'password', 'nashaat' ),
 			'user_nicename' => __( 'nice name', 'nashaat' ),
+			'delete' => __( 'Delete', 'nashaat' ),
 			'user_email' => __( 'email', 'nashaat' ),
 			'user_url' => __( 'url', 'nashaat' ),
 			'display_name' => __( 'display name', 'nashaat' ),
 			'caps' => __( 'capabilities', 'nashaat' ),
 			'no_title' => __( 'No Title', 'nashaat' ),
+			'not_logged' => __( 'Not Logged', 'nashaat' ),
+			'actions' => __( 'Actions', 'nashaat' ),
+			'invalid_id' => __( 'Invalid ID', 'nashaat' ),
+			'record_not_deleted' => __( 'Record was not deleted!', 'nashaat' ),
+			'unable_to_delete' => __( 'Unable to delete record', 'nashaat' ),
+			'exception_error' => __( 'Exception error', 'nashaat' ),
 		);
 
 		return apply_filters( 'nashaat_translations', $translation_strings );
 	}
 
 	/**
+	 * Check if the provided string is translatable.
+	 *
+	 * Translatable strings should have no spaces and be lowercase
+	 *
+	 * @param string $string String to check
+	 * @return boolean True if translatable, false otherwise
+	 */
+	private function is_translatable_string( $string ) {
+		return ( ! preg_match( '/\s/', $string ) && strtolower( $string ) === $string );
+	}
+
+	/**
 	 * Get translation string based on key provided
 	 *
-	 * @param string $key Key to retrive related translation string
+	 * @param string $key Key to retrieve related translation string
 	 * @return string Error message if key does not exist, translation string otherwise
 	 */
 	public function get_translation_string( string $key ) {
+		if ( ! $this->is_translatable_string( $key ) ) {
+			return $key;
+		}
+
 		if ( ! isset( $this->nashaat_lang[ $key ] ) ) {
 			// translators: %s is the key of the string that could not be found
 			return sprintf( __( 'Language key <b>%s</b> does not exist', 'nashaat' ), $key );
