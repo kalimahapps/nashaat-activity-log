@@ -2,9 +2,9 @@
 /*
 Plugin Name: Nashaat Activity Log
 Description: Log and view different WordPress activity on your site
-Version: 1.1
+Version: 1.2
 Author: Kalimah Apps
-Author URI: https://github.com/kalimah-apps
+Author URI: https://github.com/kalimahapps
 License: GPLv2 or later
 Text Domain: nashaat
 */
@@ -27,7 +27,6 @@ add_action( 'nashaat_init', 'nashaat_initiate_log' );
  * @return void
  */
 function nashaat_initiate_log() {
-
 	try {
 		new NashaatPostHooks();
 		new NashaatWidgetHooks();
@@ -47,10 +46,37 @@ function nashaat_initiate_log() {
 		new NashaatWCProduct();
 		new NashaatWCCoupon();
 		new NashaatWCVariations();
+
+		// Gravity
+		if ( is_plugin_active( 'gravityforms/gravityforms.php' ) ) {
+			new NashaatGravity();
+			new NashaatGravityForms();
+			new NashaatGravityConfirmations();
+			new NashaatGravityNotifications();
+			new NashaatGravitySettings();
+			new NashaatGravityFormSettings();
+			new NashaatGravityImportExport();
+		}
+
+		// User switching
+		if ( is_plugin_active( 'user-switching/user-switching.php' ) ) {
+			new NashaatUserSwitching();
+		}
+
+		// WP Crontrol
+		if ( is_plugin_active( 'wp-crontrol/wp-crontrol.php' ) ) {
+			new NashaatWpCrontrolEvents();
+			new NashaatWpCrontrolSchedules();
+		}
+
+		// Yoast Duplicate Post
+		if ( is_plugin_active( 'duplicate-post/duplicate-post.php' ) ) {
+			new NashaatDuplicatePost();
+			new NashaatDuplicatePostSettings();
+		}
 	} catch ( \Throwable $th ) {
 		echo esc_html( $th->getMessage() );
 	}
-
 }
 
 
@@ -67,7 +93,7 @@ $includes = array(
 );
 
 foreach ( $includes as $filename ) {
-	require_once NASHAAT_PLUGIN_PATH . "includes/{$filename}.php";
+	include_once NASHAAT_PLUGIN_PATH . "includes/{$filename}.php";
 }
 
 $dir_iterator = new RecursiveDirectoryIterator( NASHAAT_PLUGIN_PATH . '/hooks/' );
@@ -77,7 +103,7 @@ foreach ( $iterator as $file ) {
 	if ( ! $file->isFile() ) {
 		continue;
 	}
-	require_once $file->getPathname();
+	include_once $file->getPathname();
 }
 
 try {

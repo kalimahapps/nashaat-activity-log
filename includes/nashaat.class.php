@@ -36,8 +36,8 @@ class NashaatLog {
 	}
 
 	/**
-	 * Instantite table object in admin_init hook as errors
-	 * would occure if done in __constructor
+	 * Instantiate table object in admin_init hook as errors
+	 * would occurs if done in __constructor
 	 *
 	 * @return void
 	 */
@@ -52,14 +52,18 @@ class NashaatLog {
 	 */
 	public function enqueue_assets( string $hook_suffix ) {
 
+		wp_enqueue_script( 'notify-js', NASHAAT_PLUGIN_URL . '/libs/notify-0.4.2.min.js', array(), '0.4.2', true );
 		if ( $hook_suffix === 'toplevel_page_nashaat-table' ) {
+
 			wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css', array(), '5.15.3' );
 			wp_enqueue_style( 'main-style', NASHAAT_PLUGIN_URL . '/css/main-style.css', array(), '1.0' );
 			wp_enqueue_script( 'main-script', NASHAAT_PLUGIN_URL . '/js/main-script.js', array(), '1.0', true );
+
+			$params = array( 'nashaat_nonce' => wp_create_nonce( 'nashaat_nonce' ) );
+			wp_localize_script( 'main-script', 'vars', $params );
 		}
 
 		if ( $hook_suffix === 'nashaat_page_nashaat-settings' ) {
-			wp_enqueue_script( 'notify-js', NASHAAT_PLUGIN_URL . '/libs/notify-0.4.2.min.js', array(), '0.4.2', true );
 			wp_enqueue_style( 'settings-style', NASHAAT_PLUGIN_URL . '/css/settings-style.css', array(), '1.0' );
 			wp_enqueue_script( 'settings-script', NASHAAT_PLUGIN_URL . '/js/settings-script.js', array( 'jquery', 'wp-i18n' ), '1.0', true );
 		}
@@ -79,7 +83,7 @@ class NashaatLog {
 			'manage_options',
 			'nashaat-table',
 			array( $this, 'render_nashaat_log_table' ),
-			'data:image/svg+xml;utf8,' . rawurlencode( $menu_icon ),
+			'data:image/svg+xml;base64,' . base64_encode( $menu_icon ),
 			25
 		);
 
@@ -207,7 +211,7 @@ class NashaatLog {
 		}
 
 		$log_data = $wpdb->get_results(
-			"SELECT * FROM {$table} {$where} 
+			"SELECT * FROM {$table} {$where}
 			ORDER BY {$orderby} {$order}",
 			ARRAY_A
 		);
