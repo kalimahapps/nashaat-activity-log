@@ -16,7 +16,7 @@ class NashaatSettings {
 	private $table = NASHAAT_DB_TABLE;
 
 	/**
-	 * Constructor function. Hook into ctions
+	 * Constructor function. Hook into actions
 	 */
 	public function __construct() {
 		add_action( 'admin_init', array( $this, 'nashaat_settings_init' ) );
@@ -351,9 +351,9 @@ class NashaatSettings {
 	public function purge_log_data() {
 		global $wpdb;
 		$table = NASHAAT_DB_TABLE;
-		$turncate = $wpdb->get_results( "TRUNCATE TABLE {$table};" );
+		$truncate = $wpdb->get_results( "TRUNCATE TABLE {$table};" );
 
-		if ( is_null( $turncate ) ) {
+		if ( is_null( $truncate ) ) {
 			wp_send_json( get_nashaat_lang( 'purge_process_fail' ), 200 );
 		}
 

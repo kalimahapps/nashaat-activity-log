@@ -32,7 +32,7 @@ class NashaatLogsTableBase {
 	protected $columns = array();
 
 	/**
-	 * Current filtarable items
+	 * Current filterable items
 	 *
 	 * @var array
 	 */
@@ -48,13 +48,14 @@ class NashaatLogsTableBase {
 
 
 	/**
-	 * Constructor function. Preapre sortable, filterable columns.
+	 * Constructor function. Prepare sortable, filterable columns.
 	 * Do initial setup
 	 */
 	public function __construct() {
 
 		$this->sortable = $this->set_sortable_columns();
 		$this->filterable = $this->set_filterable_columns();
+
 		$this->prepare();
 
 		$this->total_count = $this->set_total_count();
@@ -114,7 +115,7 @@ class NashaatLogsTableBase {
 	}
 
 	/**
-	 * Prerpare data, items and other taks before display.
+	 * Prepare data, items and other tasks before display.
 	 * Must be called by subclass
 	 *
 	 * @return void
@@ -306,7 +307,6 @@ class NashaatLogsTableBase {
 		return $this->extra_tablenav( 'bottom' );
 	}
 
-
 	/**
 	 * Render search box
 	 *
@@ -450,9 +450,9 @@ class NashaatLogsTableBase {
 	 * @return int
 	 */
 	protected function get_current_page() :int {
-		$pagenum = absint( $this->paged );
+		$page_number = absint( $this->paged );
 
-		return max( 1, $pagenum );
+		return max( 1, $page_number );
 	}
 
 
@@ -475,24 +475,29 @@ class NashaatLogsTableBase {
 	 *
 	 * @param string $row Output collector string
 	 * @param array  $item Current row data
-	 * @return string
+	 * @return string Row content
 	 */
 	private function render_single_row( $row, array $item ) :string {
-		$seleted_columns = array_keys( $this->columns );
+		$selected_columns = array_keys( $this->columns );
 
 		$output = '';
-		foreach ( $item as $column_name => $value ) {
-			if ( ! in_array( $column_name, $seleted_columns ) ) {
-				$output  .= '';
-				continue;
-			}
+		foreach ( $selected_columns as $column_name ) {
+			$value = $item[ $column_name ] ?? '';
+			try {
 
-			if ( method_exists( $this, 'column_' . $column_name ) ) {
-				$cell = call_user_func( array( $this, 'column_' . $column_name ), $value, $item );
-			} else {
-				$cell = $this->column_default( $item, $column_name );
+				// Call column callback function if provided
+				if ( method_exists( $this, 'column_' . $column_name ) ) {
+					$cell = call_user_func( array( $this, 'column_' . $column_name ), $value, $item );
+				} else {
+					$cell = $this->column_default( $item, $column_name );
+				}
+				$output .= "<td>{$cell}</td>";
+			} catch ( Throwable $th ) {
+				$output .= '<td>';
+				$output .= '<div class="error-message">' . get_nashaat_lang( 'exception_error' ) . '</div>';
+				$output .= $th->getMessage();
+				$output .= '</td>';
 			}
-			$output .= "<td>{$cell}</td>";
 		}
 
 		$row .= "<tr>{$output}</tr>";

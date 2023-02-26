@@ -152,7 +152,7 @@ class NashaatTaxonomyHooks extends NashaatHookBase {
 
 		$output = $render_class::array_to_html( $taxonomy_data );
 
-		// Created taxonomy will not have changes array. Don't proceeed in this case
+		// Created taxonomy will not have changes array. Don't proceeded in this case
 		if ( ! isset( $log_info['changes'] ) || empty( $log_info['changes'] ) ) {
 			return $output;
 		}

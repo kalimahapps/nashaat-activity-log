@@ -91,13 +91,13 @@ abstract class NashaatHookBase {
 	private $date;
 
 	/**
-	 * IP addrress of user
+	 * IP address of user
 	 *
 	 * @var string
 	 */
 	private $ip_address;
 
-
+	private $last_action = '';
 	/**
 	 * Constructor function
 	 */
@@ -110,14 +110,14 @@ abstract class NashaatHookBase {
 		$this->process_hooks();
 
 		if ( ! is_array( $this->render_contexts ) ) {
-			add_filter( "render_log_info_{$this->context}", array( $this, 'render_log_info_output' ), 10, 4 );
-			return;
+			$this->render_contexts = array( $this->context );
 		}
 
 		foreach ( $this->render_contexts as $context ) {
 			add_filter( "render_log_info_{$context}", array( $this, 'render_log_info_output' ), 10, 4 );
 		}
 
+		add_filter( 'nashaat_translations', array( $this, 'set_translations_callback' ) );
 	}
 
 	/**
@@ -133,8 +133,8 @@ abstract class NashaatHookBase {
 
 			foreach ( $hooks_array as $hook ) {
 				if ( ! is_array( $hook ) ) {
-					$hook_function( $hook, array( $this, $hook . '_callback' ) );
-					// $this->callbacks_list[] = $hook . '_callback';
+					$callback_name = $this->clean_string( $hook );
+					$hook_function( $hook, array( $this, $callback_name . '_callback' ) );
 					continue;
 				}
 
@@ -155,16 +155,14 @@ abstract class NashaatHookBase {
 						$hook_function( $name, array( $this, $hook['callback'] ), $hook['priority'], $hook['args'] );
 					}
 
-					// $this->callbacks_list[] = $hook['callback'];
 					// no need to go further
 					continue;
 				}
 
-				$hook['callback'] = $this->not_set_get_default( $hook, 'callback', $hook['name'] . '_callback' );
+				$callback_name = $this->clean_string( $hook['name'] );
+				$hook['callback'] = $this->not_set_get_default( $hook, 'callback', $callback_name . '_callback' );
 
 				$hook_function( $hook['name'], array( $this, $hook['callback'] ), $hook['priority'], $hook['args'] );
-
-				// $this->callbacks_list[] = $hook['callback'];
 			}
 		}
 	}
@@ -184,7 +182,7 @@ abstract class NashaatHookBase {
 	/**
 	 * Check if key is set in array. If set return value otherwise return $default
 	 *
-	 * @param array  $array Array to check againast
+	 * @param array  $array Array to check against
 	 * @param string $key Key to check for
 	 * @param mixed  $default Default value to return if key is not set
 	 * @return mixed Key value if set or default
@@ -203,7 +201,7 @@ abstract class NashaatHookBase {
 	 * to make sure to proceed when certain keys and values exist
 	 *
 	 * @param array $check_against Check the keys and values of this array
-	 * @param array $check_for Comapre of keys and values from this array
+	 * @param array $check_for Compare of keys and values from this array
 	 * @return boolean False if single key or value not set, true otherwise
 	 */
 	protected function is_keys_values_set( $check_against, array $check_for ) {
@@ -270,7 +268,7 @@ abstract class NashaatHookBase {
 
 	/**
 	 * Prepare log data. If log_info_array property is set then loop through data
-	 * and add for each element of the array. log_info property will be ignroed.
+	 * and add for each element of the array. log_info property will be ignored.
 	 *
 	 * @return void
 	 */
@@ -298,7 +296,7 @@ abstract class NashaatHookBase {
 	 */
 	private function log_single_item( array $log_info ) {
 		global $wpdb;
-		// Check if admin actions are recored
+		// Check if admin actions are recorded
 		$settings = get_option( NASHAAT_SETTINGS_SLUG );
 		if ( current_user_can( 'manage_options' ) && ( ! isset( $settings['log_admin_actions'] ) || $settings['log_admin_actions'] != 1 ) ) {
 			return;
@@ -323,7 +321,7 @@ abstract class NashaatHookBase {
 	}
 
 	/**
-	 * Retrive user ip
+	 * Retrieve user ip
 	 *
 	 * @return string user ip
 	 */
@@ -362,5 +360,22 @@ abstract class NashaatHookBase {
 		);
 
 		return $user_data;
+	}
+
+	/**
+	 * Add or manipulate translations
+	 *
+	 * Override this method in your child class to add your own translations.
+	 *
+	 * @param array $translations Current plugin translations
+	 * @return array modified $translations array
+	 */
+	public function set_translations_callback( array $translations ) {
+		$new_translations = array();
+		if ( method_exists( $this, 'set_translations' ) ) {
+			$new_translations = $this->set_translations( $translations );
+		}
+
+		return array_merge( $translations, $new_translations );
 	}
 }

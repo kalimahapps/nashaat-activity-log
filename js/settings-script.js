@@ -18,8 +18,8 @@
 				action: 'purge_log_data',
 			},
 			beforeSend: function () {
-				const processeing = button.attr('data-processing');
-				button.text(processeing).attr('disabled', true);
+				const processing = button.attr('data-processing');
+				button.text(processing).attr('disabled', true);
 			},
 		});
 
