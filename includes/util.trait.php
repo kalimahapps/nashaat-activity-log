@@ -31,4 +31,14 @@ trait NashaatUtil {
 		}
 		return $output_array;
 	}
+
+	/**
+	 * Clean string by replacing anything not alphanumeric with _
+	 *
+	 * @param string $string String to clean
+	 * @return string Cleaned string
+	 */
+	private function clean_string( string $string ) {
+		return preg_replace( '/[^a-zA-Z0-9_]/', '_', $string );
+	}
 }

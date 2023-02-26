@@ -13,10 +13,11 @@ class NashaatRenderLogInfo {
 	/**
 	 * Helper function to Convert array to html string
 	 *
-	 * @param array $input_array Array to convert
+	 * @param array  $input_array Array to convert
+	 * @param string $heading Optional heading
 	 * @return string Html string
 	 */
-	public static function array_to_html( array $input_array ) {
+	public static function array_to_html( array $input_array, string $heading = '' ) {
 		$html = '';
 		foreach ( $input_array as $key => $value ) {
 			if ( empty( $input_array[ $key ] ) && $input_array[ $key ] != 0 ) {
@@ -28,7 +29,73 @@ class NashaatRenderLogInfo {
 			$html .= '</div>';
 		}
 
-		return $html;
+		if ( empty( $heading ) ) {
+			return $html;
+		}
+
+		// Wrap with heading
+		$output = "<div class='extra-data-wrapper'>";
+		$output .= "<h5 class='extra-data-title'>{$heading}</h5>";
+		$output .= $html;
+		$output .= '</div>';
+		return $output;
+	}
+
+	/**
+	 * Helper function to Convert array to html table string
+	 *
+	 * @param array  $input_array Array to convert
+	 * @param string $heading Optional heading
+	 * @return string Html string
+	 */
+	public static function array_to_table( array $input_array, string $heading = '' ) {
+		$html = '';
+
+		// Get first element of the array to get header
+		$first_element = reset( $input_array );
+
+		// Get keys of first element
+		$keys = array_keys( $first_element );
+
+		// Start table
+		$html .= "<table class='inner-log-table'>";
+		// Table header
+		$html .= '<thead>';
+		$html .= '<tr>';
+		$html .= '<th></th>';
+		foreach ( $keys as $key ) {
+			$translation = get_nashaat_lang( $key );
+			$html .= "<th>{$translation}</th>";
+		}
+		$html .= '</tr>';
+		$html .= '</thead>';
+
+		// Table body
+		$html .= '<tbody>';
+		foreach ( $input_array as $row_key => $row ) {
+			$html .= '<tr>';
+			$html .= "<td><b>$row_key</b></td>";
+			foreach ( $row as $key => $value ) {
+				$html .= "<td>{$value}</td>";
+			}
+			$html .= '</tr>';
+		}
+		$html .= '</tbody>';
+
+		// End table
+		$html .= '</table>';
+
+		if ( empty( $heading ) ) {
+			return $html;
+		}
+
+		// Wrap with heading
+		$output = "<div class='extra-data-wrapper'>";
+		$output .= "<h5 class='extra-data-title'>{$heading}</h5>";
+		$output .= $html;
+		$output .= '</div>';
+		return $output;
+
 	}
 
 	/**
@@ -40,7 +107,7 @@ class NashaatRenderLogInfo {
 	 * @return string Title or default language
 	 */
 	public static function maybe_get_post_title( $title, int $post_id = 0, string $default = 'no_title' ) :string {
-		// if array is sapplied
+		// if array is supplied
 		if ( is_array( $title ) ) {
 			if ( empty( $title['title'] ) ) {
 				return get_nashaat_lang( $default );
@@ -48,7 +115,7 @@ class NashaatRenderLogInfo {
 			$title = $title['title'];
 		}
 
-		// if string is spplied
+		// if string is supplied
 		if ( empty( $title ) ) {
 			return get_nashaat_lang( $default );
 		}
@@ -286,5 +353,19 @@ class NashaatRenderLogInfo {
 
 		$output .= '</br>';
 		return $output;
+	}
+
+	/**
+	 * Convert boolean to toggle value (off/on)
+	 *
+	 * @param boolean|null $bool_value Boolean value. Can be null.
+	 * @return string on if $bool_value is 1, off otherwise.
+	 */
+	public static function boolean_to_toggle( $bool_value ) :string {
+		if ( is_null( $bool_value ) ) {
+			return 'off';
+		}
+
+		return $bool_value ? 'on' : 'off';
 	}
 }
