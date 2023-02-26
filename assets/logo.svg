@@ -1,12 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310.09 342.68" height="20" width="20">
 	<defs>
 		<style>
-			.part-1 {
-				fill: #a7aaad;
-			}
+
 			.part-2,
 			.part-3 {
-				fill: none;
+				fill: none !important;
 				stroke: #a7aaad;
 				stroke-linecap: round;
 				stroke-miterlimit: 10;
@@ -17,11 +15,11 @@
 			.part-3 {
 				stroke-width: 3px;
 			}
-		</style>
+</style>
 	</defs>
 	<g>
 		<g>
-			<path class="part-1" d="M136.8,24.33v149.1h-.18L36.25,283.53A149.1,149.1,0,1,0,136.8,24.33Z" />
+			<path fill="#a7aaad" d="M136.8,24.33v149.1h-.18L36.25,283.53A149.1,149.1,0,1,0,136.8,24.33Z" />
 		</g>
 		<g>
 			<line class="part-2" x1="114.71" y1="45.77" x2="90.87" y2="45.77" />
