@@ -1,0 +1,12 @@
+/.wordpress-org
+/.git
+/.vscode
+/.github
+/node_modules
+.package-lock.json
+.package.json
+.eslintrc
+.prettierrc
+.phpcs.xml
+.distignore
+.gitignore
