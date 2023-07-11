@@ -1,0 +1,37 @@
+{
+	"ignore": [
+		"**/node_modules/**",
+		"**/vendor/**"
+	],
+	"debug": true,
+	"rules": {
+		"psr/brace-style": {
+			"style": "1tbs"
+		},
+		"psr/spacing.pair": {
+			"align": true
+		},
+		"psr/spacing.assignment": {
+			"align": true
+		},
+		"psr/indent": {
+			"type": "tab",
+			"length": 1
+		},
+		"psr/name-case": {
+			"method": "snake"
+		},
+		"psr/line-limit": {
+			"code": 120
+		},
+		"taqwim/max-lines": {
+			"file": 500,
+			"class": 500,
+			"function": 150
+		},
+		"taqim/id-length": {
+			"max": 35
+		},
+		"docblock/require": "off"
+	}
+}
