@@ -2,7 +2,7 @@
 /*
 Plugin Name: Nashaat Activity Log
 Description: Log and view different WordPress activity on your site
-Version: 1.2.2
+Version: 1.2.3
 Author: Kalimah Apps
 Author URI: https://github.com/kalimahapps
 License: GPLv2 or later

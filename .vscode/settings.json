@@ -20,6 +20,7 @@
 		"package-lock.json": true
 	},
 	"files.eol": "\n",
+	"files.autoSave": "onFocusChange",
 	"search.collapseResults": "alwaysExpand",
 	"editor.formatOnType": false,
 	"editor.formatOnPaste": false,
