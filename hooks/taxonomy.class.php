@@ -43,7 +43,7 @@ class NashaatTaxonomyHooks extends NashaatHookBase {
 	 */
 	protected function wp_update_term_data_callback( array $data, int $term_id, string $taxonomy, array $args ) {
 		if ( $taxonomy === 'nav_menu' ) {
-			return false;
+			return $data;
 		}
 
 		$prev_data = get_term( $term_id, $taxonomy, ARRAY_A );
@@ -57,7 +57,7 @@ class NashaatTaxonomyHooks extends NashaatHookBase {
 		}
 
 		if ( count( $changes ) === 0 ) {
-			return;
+			return $data;
 		}
 
 		$term_name = $prev_data['name'];
